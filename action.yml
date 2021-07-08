@@ -1,0 +1,22 @@
+name: 'Pull Request Reminders'
+description: 'Posts pull request reminders after a certain amount of time'
+author: 'GitHub'
+inputs:
+  repo-token:
+    description: 'The GITHUB_TOKEN secret'
+    required: true
+  reminder-message:
+    description: 'Reminder message to be posted as a comment'
+    required: true
+  review-turnaround-hours:
+    description: 'Number of hours of outstanding PR reviews until reminders are posted'
+    required: true
+  recurring:
+    description: 'Set to 1 to allow for multiple reminder comments as time goes on'
+    required: false
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
+branding:
+  icon: 'activity'  
+  color: 'blue'
