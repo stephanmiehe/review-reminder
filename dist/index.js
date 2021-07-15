@@ -58,8 +58,9 @@ function run() {
                   ... on ReviewRequestedEvent {
                     createdAt
                     requestedReviewer {
-                      login
-                    }
+                      ... on User {
+                        login
+                      }
                   }
                 }
               },

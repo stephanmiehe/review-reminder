@@ -31,8 +31,9 @@ async function run(): Promise<void> {
                   ... on ReviewRequestedEvent {
                     createdAt
                     requestedReviewer {
-                      login
-                    }
+                      ... on User {
+                        login
+                      }
                   }
                 }
               },
