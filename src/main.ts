@@ -30,6 +30,7 @@ async function run(): Promise<void> {
                   __typename
                   ... on ReviewRequestedEvent {
                     createdAt
+                    author
                   }
                 }
               },
@@ -38,6 +39,7 @@ async function run(): Promise<void> {
                   __typename
                   ... on PullRequestReview {
                     createdAt
+                    author
                   }
                 }
               },
@@ -57,14 +59,26 @@ async function run(): Promise<void> {
         }
       );
 
-      if (pullRequestResponse.repository.pullRequest.reviews.nodes.length > 0) {
-        continue;
-      }
-
+      // If no reviews have been requested the PR is out of scope
       if (
         pullRequestResponse.repository.pullRequest.timelineItems.nodes
           .length === 0
       ) {
+        continue;
+      }
+
+      const { data: pullRequest } = await octokit.pulls.get({
+        ...github.context.repo,
+        pull_number: pr.number,
+      });
+
+      const reviews = pullRequestResponse.repository.pullRequest.reviews.nodes.map((rr) => `${rr.author.login}`);
+      const requested_reviewers = pullRequest.requested_reviewers.map((rr) => `${rr.login}`);
+
+      const result = reviews.every(val => requested_reviewers.includes(val));
+
+      // If every requested review has been obtained skip the PR.
+      if (result) {
         continue;
       }
 
@@ -82,16 +96,7 @@ async function run(): Promise<void> {
         continue;
       }
 
-      const { data: pullRequest } = await octokit.pulls.get({
-        ...github.context.repo,
-        pull_number: pr.number,
-      });
-
-      const reviewers = pullRequest.requested_reviewers
-        .map((rr) => `@${rr.login}`)
-        .join(", ");
-
-      const addReminderComment = `${reviewers} \n${reminderMessage}`;
+      const addReminderComment = `${requested_reviewers.map((rr) => `@${rr}`).join(", ")} \n${reminderMessage}`;
       const hasReminderComment =
         pullRequestResponse.repository.pullRequest.comments.nodes.filter(
           (node) => {
@@ -112,7 +117,7 @@ async function run(): Promise<void> {
       });
 
       core.info(
-        `create comment issue_number: ${pullRequest.number} body: ${reviewers} ${addReminderComment}`
+        `create comment issue_number: ${pullRequest.number} body: ${requested_reviewers} ${addReminderComment}`
       );
     }
   } catch (error) {
@@ -124,10 +129,10 @@ interface PullRequestResponse {
   repository: {
     pullRequest: {
       timelineItems: {
-        nodes: Node[];
+        nodes: TimelineNode[];
       };
       reviews: {
-        nodes: Node[];
+        nodes: ReviewNode[];
       };
       comments: {
         nodes: {
@@ -138,9 +143,24 @@ interface PullRequestResponse {
   };
 }
 
-interface Node {
+interface TimelineNode {
   __typename: string;
   createdAt: string;
+  requestedReviewer: RequestedReviewer;
+}
+
+interface ReviewNode {
+  __typename: string;
+  createdAt: string;
+  author: Author;
+}
+
+interface RequestedReviewer {
+  login: string;
+}
+
+interface Author {
+  login: string;
 }
 
 run();
