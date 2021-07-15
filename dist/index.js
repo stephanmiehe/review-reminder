@@ -92,6 +92,7 @@ function run() {
                 // If no reviews have been requested the PR is out of scope
                 if (pullRequestResponse.repository.pullRequest.timelineItems.nodes
                     .length === 0) {
+                    core.info(`issue_number: ${pr.number} skipping as no reviews have been requested`);
                     continue;
                 }
                 const { data: pullRequest } = yield octokit.pulls.get(Object.assign(Object.assign({}, github.context.repo), { pull_number: pr.number }));
@@ -100,6 +101,7 @@ function run() {
                 const result = reviews.every(val => requested_reviewers.includes(val));
                 // If every requested review has been obtained skip the PR.
                 if (result) {
+                    core.info(`issue_number: ${pr.number} all pending reviews have been actioned`);
                     continue;
                 }
                 const pullRequestCreatedAt = pullRequestResponse.repository.pullRequest.timelineItems.nodes[0]
@@ -109,14 +111,15 @@ function run() {
                     1000 * 60 * 60 * reviewTurnaroundHours;
                 core.info(`currentTime: ${currentTime} reviewByTime: ${reviewByTime}`);
                 if (currentTime < reviewByTime) {
+                    core.info(`issue_number: ${pr.number} currentTime: ${currentTime} reviewByTime: ${reviewByTime} PR has not breached review SLA`);
                     continue;
                 }
                 const addReminderComment = `${requested_reviewers.map((rr) => `@${rr}`).join(", ")} \n${reminderMessage}`;
                 const hasReminderComment = pullRequestResponse.repository.pullRequest.comments.nodes.filter((node) => {
                     return node.body.match(RegExp(reminderMessage)) != null;
                 }).length > 0;
-                core.info(`hasReminderComment: ${hasReminderComment}`);
                 if (hasReminderComment && recurring == 0) {
+                    core.info(`issue_number: ${pr.number} hasReminderComment: ${hasReminderComment}`);
                     continue;
                 }
                 yield octokit.issues.createComment(Object.assign(Object.assign({}, github.context.repo), { issue_number: pullRequest.number, body: addReminderComment }));

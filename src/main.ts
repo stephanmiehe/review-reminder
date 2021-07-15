@@ -70,6 +70,9 @@ async function run(): Promise<void> {
         pullRequestResponse.repository.pullRequest.timelineItems.nodes
           .length === 0
       ) {
+        core.info(
+          `issue_number: ${pr.number} skipping as no reviews have been requested`
+        );
         continue;
       }
 
@@ -85,6 +88,9 @@ async function run(): Promise<void> {
 
       // If every requested review has been obtained skip the PR.
       if (result) {
+        core.info(
+          `issue_number: ${pr.number} all pending reviews have been actioned`
+        );
         continue;
       }
 
@@ -99,6 +105,9 @@ async function run(): Promise<void> {
 
       core.info(`currentTime: ${currentTime} reviewByTime: ${reviewByTime}`);
       if (currentTime < reviewByTime) {
+        core.info(
+          `issue_number: ${pr.number} currentTime: ${currentTime} reviewByTime: ${reviewByTime} PR has not breached review SLA`
+        );
         continue;
       }
 
@@ -110,9 +119,8 @@ async function run(): Promise<void> {
           }
         ).length > 0;
 
-      core.info(`hasReminderComment: ${hasReminderComment}`);
-
       if (hasReminderComment && recurring == 0) {
+        core.info(`issue_number: ${pr.number} hasReminderComment: ${hasReminderComment}`);
         continue;
       }
 
