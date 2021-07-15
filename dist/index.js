@@ -98,10 +98,10 @@ function run() {
                 const { data: pullRequest } = yield octokit.pulls.get(Object.assign(Object.assign({}, github.context.repo), { pull_number: pr.number }));
                 const reviews = pullRequestResponse.repository.pullRequest.reviews.nodes.map((rr) => `${rr.author.login}`);
                 const requested_reviewers = pullRequest.requested_reviewers.map((rr) => `${rr.login}`);
-                const result = reviews.every(val => requested_reviewers.includes(val));
+                const result = requested_reviewers.every(val => reviews.includes(val));
                 // If every requested review has been obtained skip the PR.
                 if (result) {
-                    core.info(`issue_number: ${pr.number} all pending reviews have been actioned`);
+                    core.info(`issue_number: ${pr.number} result: ${result} all pending reviews have been actioned`);
                     continue;
                 }
                 const pullRequestCreatedAt = pullRequestResponse.repository.pullRequest.timelineItems.nodes[0]
