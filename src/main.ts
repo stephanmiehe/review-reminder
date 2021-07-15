@@ -30,7 +30,9 @@ async function run(): Promise<void> {
                   __typename
                   ... on ReviewRequestedEvent {
                     createdAt
-                    author
+                    requestedReviewer {
+                      login
+                    }
                   }
                 }
               },
@@ -39,7 +41,9 @@ async function run(): Promise<void> {
                   __typename
                   ... on PullRequestReview {
                     createdAt
-                    author
+                    author {
+                      login
+                    }
                   }
                 }
               },

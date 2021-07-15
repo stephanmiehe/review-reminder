@@ -57,7 +57,9 @@ function run() {
                   __typename
                   ... on ReviewRequestedEvent {
                     createdAt
-                    author
+                    requestedReviewer {
+                      login
+                    }
                   }
                 }
               },
@@ -66,7 +68,9 @@ function run() {
                   __typename
                   ... on PullRequestReview {
                     createdAt
-                    author
+                    author {
+                      login
+                    }
                   }
                 }
               },
