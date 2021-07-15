@@ -34,6 +34,7 @@ async function run(): Promise<void> {
                       ... on User {
                         login
                       }
+                    }
                   }
                 }
               },

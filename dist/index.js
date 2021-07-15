@@ -61,6 +61,7 @@ function run() {
                       ... on User {
                         login
                       }
+                    }
                   }
                 }
               },
