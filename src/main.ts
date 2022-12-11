@@ -25,6 +25,11 @@ async function run(): Promise<void> {
         query($owner: String!, $name: String!, $number: Int!) {
           repository(owner: $owner, name: $name) {
             pullRequest(number: $number) {
+              labels(first: 50) {
+                nodes {
+                  name
+                }
+              },
               timelineItems(first: 50, itemTypes: [REVIEW_REQUESTED_EVENT]) {
                 nodes {
                   __typename
@@ -72,6 +77,14 @@ async function run(): Promise<void> {
       ) {
         core.info(
           `issue_number: ${pr.number} skipping as no reviews have been requested`
+        );
+        continue;
+      }
+
+      // If on hold label applied skip the PR.
+      if (pr.labels.some((label) => label.name === "on hold")) {
+        core.info(
+          `issue_number: ${pr.number} skipping as on hold label has been applied`
         );
         continue;
       }
