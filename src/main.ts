@@ -12,10 +12,10 @@ async function run(): Promise<void> {
   const recurring = parseInt(core.getInput("recurring"), 0);
 
   try {
-    const { data: pullRequests } = await octokit.pulls.list({
+    const { data: pullRequests } = await octokit.paginate(octokit.pulls.list({
       ...github.context.repo,
       state: "open",
-    });
+    }));
 
     for (const pr of pullRequests) {
       core.info(`pr title: ${pr.title}`);
