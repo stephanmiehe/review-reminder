@@ -62,7 +62,7 @@ function run() {
                     _a.label = 1;
                 case 1:
                     _a.trys.push([1, 7, , 8]);
-                    return [4 /*yield*/, octokit.pulls.list(__assign(__assign({}, github.context.repo), { state: "open" }))];
+                    return [4 /*yield*/, octokit.pulls.list(__assign(__assign({}, github.context.repo), { state: "open", per_page: 100 }))];
                 case 2:
                     pullRequests = (_a.sent()).data;
                     _loop_1 = function (pr) {
