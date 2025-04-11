@@ -1,0 +1,35 @@
+name: ✈️ Offsite Request
+description: Tracking issue for requesting an offsite
+title: '[Offsite request] '
+labels: 'offsite request'
+assignees:
+
+body:
+  - type: textarea
+    id: overview
+    validations:
+      required: true
+    attributes:
+      label: Overview
+      description: "Brief description of the work and the business problem(s) being solved"
+  - type: textarea
+    id: goals
+    validations:
+      required: true
+    attributes:
+      label: Goals
+      description: "List out the overall goals of this offsite. Use the SMART goal approach: https://www.atlassian.com/blog/productivity/how-to-write-smart-goals"
+  - type: textarea
+    id: attendees
+    validations:
+      required: true
+    attributes:
+      label: Attendees
+      description: "List the team member(s) that will be working on this objective and their roles"
+  - type: input
+    id: dates
+    validations:
+      required: true
+    attributes:
+      label: Dates
+      description: Generally the offsite should consist of two travel days and two working days
