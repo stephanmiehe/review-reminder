@@ -2,6 +2,7 @@ name: ✈️ Offsite Request
 description: Tracking issue for requesting an offsite
 title: '[Offsite request] '
 labels: 'offsite request'
+assignees:
 
 body:
   - type: textarea
@@ -32,3 +33,11 @@ body:
     attributes:
       label: Dates
       description: Generally the offsite should consist of two travel days and two working days
+  - type: input
+    id: cost
+    validations:
+      required: true
+    attributes:
+      label: Cost
+      description: The estimated cost should account for all expenses, including flights, train fares, mileage for driving, hotel accommodations, per diem, taxi fares, and any other related costs.
+
